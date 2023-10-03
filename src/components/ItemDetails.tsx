@@ -1,49 +1,60 @@
-import { StyleSheet, Text, View, Image, Dimensions } from "react-native"
-import { useFonts } from "expo-font"
+import { StyleSheet, Text, View, Image, Dimensions, SafeAreaView } from "react-native"
+import React, { useContext, useEffect, useState } from "react"
+import { StoreContext } from "../../Context"
+import { IItem } from "../interfaces/interfaces"
+import { useFocusEffect } from "@react-navigation/native"
 
 const dimensions = Dimensions.get("window")
 const imageWidth = dimensions.width
 
-export const ItemDetails = ({ data, msg }) => {
-	const [fontsLoaded] = useFonts({
-		"OpenSans-Light": require("../assets/fonts/OpenSans/OpenSans-Light.ttf"),
-		"OpenSans-Medium": require("../assets/fonts/OpenSans/OpenSans-Medium.ttf"),
-		"OpenSans-Bold": require("../assets/fonts/OpenSans/OpenSans-Bold.ttf"),
+export const ItemDetails = ({ route }) => {
+	const priceStore = useContext(StoreContext)
+	const item = priceStore.getItem
+
+	const [data, setData] = useState<IItem>()
+
+	useFocusEffect(() => {
+		console.log('ItemDetails: useEffect');
+		
+		if (route?.params?.item) setData(route.params.item)
+		else setData(item)
 	})
 
-	if (!fontsLoaded) {
-		return null
-	}
-
 	return (
-		<View>
-			<View style={styles.ItemContainer}>
-				<Text style={styles.ManufacturerName}>{data?.ManufacturerName._text ? data?.ManufacturerName._text : msg}</Text>
-				<Text style={styles.ItemName}>{data?.ItemName._text && data?.ItemName._text}</Text>
-				<Text style={styles.ItemCode}>ברקוד: {data?.ItemCode._text && data?.ItemCode._text}</Text>
-				<Text style={styles.ItemPrice}>
-					<Text style={styles.ItemPriceSymbol}>{`${data?.ItemPrice._text && "₪ "}`}</Text>
-					{`${data?.ItemPrice._text && data?.ItemPrice._text} `}
-				</Text>
-				<Text style={styles.Quantity}>כמות: {`${data?.Quantity._text && data?.Quantity._text} ${data?.UnitQty._text && data?.UnitQty._text}`}</Text>
-			</View>
+		<SafeAreaView style={{ backgroundColor: "#5F6F94" }}>
+			<View style={styles.container}>
+				<View style={styles.ItemContainer}>
+					<Text style={styles.ManufacturerName}>{data?.ManufacturerName && data?.ManufacturerName}</Text>
+					<Text style={styles.ItemName}>{data?.ItemName && data?.ItemName}</Text>
+					<Text style={styles.ItemCode}>{data?.ItemCode && `ברקוד: ${data?.ItemCode}`}</Text>
+					<Text style={styles.ItemPrice}>
+						<Text style={styles.ItemPriceSymbol}>{`${data?.ItemPrice ? "₪ " : ""}`}</Text>
+						{`${data?.ItemPrice ? data?.ItemPrice : ""} `}
+					</Text>
+					<Text style={styles.Quantity}>{`${data?.Quantity ? data?.Quantity : ""} ${data?.UnitQty ? data?.UnitQty : ""}`}</Text>
+				</View>
 
-			<Image style={styles.productImg} source={{ uri: `https://img.rami-levy.co.il/product/${data?.ItemCode._text}/small.jpg` }}></Image>
+				<Image style={styles.productImg} source={{ uri: `https://img.rami-levy.co.il/product/${data?.ItemCode}/small.jpg` }}></Image>
 
-			<View style={styles.SaleContainer}>
-				<Text style={styles.title}>מבצע</Text>
-				<Text style={styles.PromotionDescription}>{data?.promotion[0] && data?.promotion[0]?.PromotionDescription._text}</Text>
-				<Text style={styles.DiscountRate}>{data?.promotion[0]?.DiscountRate && parseInt(data?.promotion[0]?.DiscountRate._text) / 100 + "%"}</Text>
-				<Text style={styles.MinQty}>{data?.promotion[0]?.DiscountRate && "כמות מינמלית: " + data?.promotion[0]?.MinQty._text}</Text>
-				<Text style={styles.PromotionDate}>{data?.promotion[0]?.PromotionStartDate && `בתוקף: ${data?.promotion[0]?.PromotionStartDate._text} - ${data?.promotion[0]?.PromotionEndDate._text}`}</Text>
+				<View style={styles.SaleContainer}>
+					<Text style={styles.title}>מבצע</Text>
+					<Text style={styles.PromotionDescription}>{data?.promotion?.M && data?.promotion?.M?.PromotionDescription}</Text>
+					<Text style={styles.DiscountRate}>{data?.promotion?.M?.DiscountRate && parseInt(data?.promotion.M?.DiscountRate) / 100 + "%"}</Text>
+					<Text style={styles.MinQty}>{data?.promotion?.M?.DiscountRate && "כמות מינמלית: " + data?.promotion?.M?.MinQty}</Text>
+					<Text style={styles.PromotionDate}>{data?.promotion?.M?.PromotionStartDate && `בתוקף: ${data?.promotion?.M?.PromotionStartDate} - ${data?.promotion?.M?.PromotionEndDate}`}</Text>
+				</View>
 			</View>
-		</View>
+		</SafeAreaView>
 	)
 }
 
 const styles = StyleSheet.create({
+	container: {
+		height: "100%",
+		justifyContent: "flex-start",
+		backgroundColor: "#FFFFFF",
+	},
 	ItemContainer: {
-		direction: "rtl",
 		padding: 20,
 	},
 	ManufacturerName: {
@@ -85,7 +96,7 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 	},
 	SaleContainer: {
-		direction: "rtl",
+		// direction: "rtl",
 		padding: 10,
 		borderTopWidth: 1,
 		borderTopColor: "lightgray",

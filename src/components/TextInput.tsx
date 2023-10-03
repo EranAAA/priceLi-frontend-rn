@@ -1,32 +1,31 @@
-import React from "react"
-import { StyleSheet, TextInput } from "react-native"
+import React, { useEffect } from "react"
+import { Dimensions, Keyboard, StyleSheet, TextInput } from "react-native"
 
-export const ItemSearch = ({ setItemCode }) => {
-	const [number, onChangeNumber] = React.useState("")
+const DEVICE_WIDTH = Dimensions.get("window").width
 
-	React.useEffect(() => {
+export const ItemSearch = ({ setItemCode, itemCode }) => {
+	const [number, onChangeNumber] = React.useState<string>(itemCode ? String(itemCode) : "")
+
+	useEffect(() => {
 		if (number.length === 13) {
 			setItemCode(number)
+			Keyboard.dismiss()
 		}
 	}, [number])
 
-	return <TextInput style={styles.input} onChangeText={onChangeNumber} value={number} placeholder='Barcode' keyboardType='numeric' />
+	return <TextInput style={styles.input} onChangeText={onChangeNumber} value={number} placeholder='חפש ברקוד' keyboardType='numeric' />
 }
 
 const styles = StyleSheet.create({
 	input: {
-		height: 40,
-		width: 200,
-		padding: 10,
-		margin: 12,
+		width: DEVICE_WIDTH * 0.9,
+		padding: 15,
+		marginTop: 10,
+		borderRadius: 10,
 
 		textAlign: "center",
-		// color: "#FFF",
+		fontFamily: "OpenSans-Medium",
 
-		borderTopWidth: 0,
-		borderLeftWidth: 0,
-		borderRightWidth: 0,
-		borderBottomWidth: 1,
-		// borderBottomColor: "#FFF",
+		backgroundColor: "#FFFFFF",
 	},
 })

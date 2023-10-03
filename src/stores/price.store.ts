@@ -1,110 +1,79 @@
-import { makeAutoObservable, toJS } from "mobx"
+import { makeAutoObservable } from "mobx"
 
 import { PriceService } from "../services/price.service"
-import { utilService } from "../services/util.service"
-
-import { IItem, IItemFilter } from "../interfaces/interfaces"
+import { IItem } from "../interfaces/interfaces"
 
 export class PriceStore {
 	private items: IItem[] = []
-	private itemsCodeList: string[] = []
-	private itemsFromLocalStorage: IItem[] = []
-	private itemFilter: IItemFilter = {}
-
-	private pages: number = 1
+	private item: IItem
 
 	constructor(private readonly priceService: PriceService) {
 		makeAutoObservable(this)
-		// this.fetchItems()
-		this.fetchItemCodeList()
-		this.fetchItemsFromStorage()
+		this.fetchItems()
 	}
 
-	private async fetchItems() {
+	fetchItem = async (itemId: number) => {
+		const priceService = new PriceService()
 		try {
-			const { items } = await this.priceService.queryItems()
-			console.log("Got Items;: ", items.length)
-			// this.setPagesCount(1)
-			this.setItems(items)
-		} catch (err) {
-			this.setItems([])
+			const item = await priceService.queryItem(itemId)
+			console.log('====================================');
+			console.log(item);
+			console.log('====================================');
+			if (item?.ItemName) {
+				this.setItem(item)
+				this.setItems(item)
+			} else this.setItem(null)
+			return item
+		} catch (error) {
+			console.log("error:", error)
 		}
 	}
 
-	private async fetchItem(itemId: any) {
-		console.log("Got itemId: ", itemId)
+	fetchItems = async () => {
+		const priceService = new PriceService()
 		try {
-			const item = await this.priceService.queryItem(itemId)
-			console.log("Got Item: ", item)
-			this.setItems([item])
-			this.fetchItemsFromStorage()
-		} catch (err) {
-			this.setItemsFromLocalStorage([])
+			const items = await priceService.getData()
+			if (items) this.items = items
+			else console.log("No data available")
+
+			return items
+		} catch (error) {
+			console.log("error:", error)
 		}
 	}
 
-	private async fetchItemCodeList() {
+	removeItem = async (itemCode: string) => {
+		const priceService = new PriceService()
 		try {
-			const { itemsList } = await this.priceService.queryItemCodeList()
-			console.log("Got Items Code: ", itemsList.length)
-			this.setItemsCodeList(itemsList)
-			console.log(itemsList)
-		} catch (err) {
-			this.setItemsCodeList([])
+			this.items = this.items.filter(item => item.ItemCode !== itemCode)
+			await priceService.storeData(this.items)
+		} catch (error) {
+			console.log("error:", error)
 		}
 	}
 
-	private async fetchItemsFromStorage() {
-		try {
-			const list = await this.priceService.queryItemsLocalStorage()
-			console.log("Got List from local storage: ", list.length)
-			this.setItemsFromLocalStorage(list)
-		} catch (err) {
-			this.setItemsFromLocalStorage([])
+	private async setItems(item: IItem) {
+		const priceService = new PriceService()
+		if (!this.items) {
+			this.items = [item]
+			await priceService.storeData([item])
+		} else {
+			const idx = this.items.findIndex((i) => i.ItemCode === item.ItemCode)
+			if (idx >= 0) this.items[idx] = item
+			else this.items.unshift(item)
+			await priceService.storeData(this.items)
 		}
 	}
 
-	private setItems(items: IItem[]) {
-		this.items = items
-	}
-
-	private setItemsCodeList(items: string[]) {
-		this.itemsCodeList = items
-	}
-
-	private setItemsFromLocalStorage(items: IItem[]) {
-		this.itemsFromLocalStorage = items
+	private setItem(item: IItem) {
+		this.item = item
 	}
 
 	get getItems() {
 		return this.items
 	}
 
-	get getItemsCodeList() {
-		return this.itemsCodeList
-	}
-
-	get getItemsFromLocalStorage() {
-		return this.itemsFromLocalStorage
-	}
-
-	get getItemFilter() {
-		return this.itemFilter
-	}
-
-	get getPages() {
-		return this.pages
-	}
-
-	setFilter(filter: IItemFilter) {
-		let priceFilter = this.itemFilter
-		filter?.priceNumber !== undefined && (priceFilter.priceNumber = filter.priceNumber)
-		this.fetchItem(priceFilter.priceNumber)
-
-		return (this.itemFilter = priceFilter)
-	}
-
-	setPaging(page: number) {
-		this.fetchItems()
+	get getItem() {
+		return this.item
 	}
 }

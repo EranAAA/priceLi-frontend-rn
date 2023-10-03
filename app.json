@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "PriceLi",
-    "slug": "demo-app",
+    "name": "Price Li",
+    "slug": "price-li", 
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./src/assets/icon.png",
@@ -18,16 +18,23 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.eranavichzer.price-li"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.eranavichzer.price-li"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./src/assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "ed605d8b-ef08-4c16-964d-fbdc7e868367"
+      }
     }
   }
 }

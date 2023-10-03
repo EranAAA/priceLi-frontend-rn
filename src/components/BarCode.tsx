@@ -1,27 +1,28 @@
 import React, { useState, useEffect } from "react"
-import { Text, View, StyleSheet, Button, Dimensions, Pressable } from "react-native"
+import { Text, View, StyleSheet, Button, Dimensions, Pressable, Keyboard } from "react-native"
 import { BarCodeScanner } from "expo-barcode-scanner"
 import Icon from "react-native-vector-icons/FontAwesome"
 
 const DEVICE_WIDTH = Dimensions.get("window").width
 const DEVICE_HEIGHT = Dimensions.get("window").height
 
-export const BarCode = ({ setIsBarCodeOpen }) => {
+export const BarCode = ({ setIsBarCodeOpen, setItemCode }) => {
 	const [hasPermission, setHasPermission] = useState(null)
 	const [scanned, setScanned] = useState(false)
 
 	useEffect(() => {
+		Keyboard.dismiss()
 		const getBarCodeScannerPermissions = async () => {
 			const { status } = await BarCodeScanner.requestPermissionsAsync()
 			setHasPermission(status === "granted")
 		}
-
 		getBarCodeScannerPermissions()
 	}, [])
 
 	const handleBarCodeScanned = ({ type, data }) => {
 		setScanned(true)
-		alert(`${type}: ${data}`)
+		setIsBarCodeOpen(false)
+		setItemCode(data)
 	}
 
 	if (hasPermission === null) {
@@ -35,14 +36,14 @@ export const BarCode = ({ setIsBarCodeOpen }) => {
 		<>
 			<BarCodeScanner onBarCodeScanned={scanned ? undefined : handleBarCodeScanned} style={styles.container} />
 			<View style={styles.buttonContainer}>
-				<Pressable style={styles.button} onPress={() => setIsBarCodeOpen(false)}>
+				{/* <Pressable style={styles.button} onPress={() => setIsBarCodeOpen(false)}>
 					<Text style={styles.text}>{"סגור"}</Text>
-				</Pressable>
-				{scanned && (
+				</Pressable> */}
+				{/* {scanned && (
 					<Pressable style={styles.button} onPress={() => setScanned(false)}>
 						<Text style={styles.text}>{"לחץ כאן כדי לסרוק שוב"}</Text>
 					</Pressable>
-				)}
+				)} */}
 			</View>
 		</>
 	)
@@ -52,7 +53,7 @@ const styles = StyleSheet.create({
 	container: {
 		position: "absolute",
 		bottom: 0,
-		height: DEVICE_HEIGHT / 1.1,
+		height: DEVICE_HEIGHT,
 		width: DEVICE_WIDTH,
 	},
 	buttonContainer: {

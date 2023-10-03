@@ -1,79 +1,50 @@
+import axios from "axios"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+
 import { IItem } from "../interfaces/interfaces"
 import { storageService } from "../services/storage.service"
-import axios from "axios"
 
 const BASE_URL = process.env.NODE_ENV === "production" ? "/api" : "http://192.168.1.236:3030/api"
-
 const KEY = "item"
 
 export class PriceService {
-	async queryItems() {
-		const response = await fetch(`${BASE_URL}/price`, {
-			method: "GET",
-			headers: { "Content-Type": "application/json" },
-		})
-
-		const parsedResponse = await response.json()
-		if (!response.ok) throw new Error(parsedResponse)
-		return parsedResponse
-	}
-
 	async queryItem(itemId: number) {
 		try {
-			const { data }: { data: IItem } = await axios.get(`${BASE_URL}/price/${itemId}`)
-			console.log('items', data);
-			// console.log("Got Item: ", items?.data?.ItemName._text)
-			if (data) return data
+			const { data }: { data: IItem } = await axios.get(`https://ytg6de3onb.execute-api.us-east-1.amazonaws.com/getItem?ItemCode=${itemId}`)
+			if (data?.ItemCode) return data
 		} catch (error) {
 			console.log("Got error: ", error)
 		}
 	}
 
-	async queryItemCodeList() {
-		const response = await fetch(`${BASE_URL}/price/list`, {
-			method: "GET",
-			headers: { "Content-Type": "application/json" },
-		})
-
-		const parsedResponse = await response.json()
-		if (!response.ok) throw new Error(parsedResponse)
-		return parsedResponse
-	}
-
-	async queryItemsLocalStorage() {
+	async storeData(item: IItem[]) {
 		try {
-			return await storageService.query(KEY)
+			const jsonValue = JSON.stringify(item)
+			// console.log('jsonValue',jsonValue);
+
+			await AsyncStorage.setItem("itemsDB", jsonValue)
 		} catch (err) {
-			console.log("cant get cards!")
-			throw err
+			// saving error
+			console.log("storeData err", err)
 		}
 	}
 
-	async queryItemLocalStorage(itemId: string) {
+	async getData() {
 		try {
-			const card = await storageService.get(KEY, itemId)
-			return card
+			const jsonValue = await AsyncStorage.getItem("itemsDB")
+			return jsonValue != null ? JSON.parse(jsonValue) : null
 		} catch (err) {
-			console.log("cant get card by id!")
-			throw err
+			console.log("getData err", err)
 		}
 	}
 
-	async saveToLocalStorage(item: IItem) {
+	async removeData() {
 		try {
-			return await storageService.post(KEY, item)
+			await AsyncStorage.removeItem("itemsDB")
 		} catch (err) {
-			console.log("cant save card")
-			throw err
+			console.log("removeValue err", err)
 		}
-	}
 
-	async removeFromLocalStorage(itemId: string) {
-		try {
-			return await storageService.remove(KEY, itemId)
-		} catch (err) {
-			console.log("cant delete card")
-			throw err
-		}
+		console.log("Done.")
 	}
 }
