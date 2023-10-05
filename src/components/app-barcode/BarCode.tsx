@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react"
 import { Text, View, StyleSheet, Button, Dimensions, Pressable, Keyboard } from "react-native"
 import { BarCodeScanner } from "expo-barcode-scanner"
-import Icon from "react-native-vector-icons/FontAwesome"
+// import Icon from "react-native-vector-icons/FontAwesome"
 
 const DEVICE_WIDTH = Dimensions.get("window").width
 const DEVICE_HEIGHT = Dimensions.get("window").height
 
-export const BarCode = ({ setIsBarCodeOpen, setItemCode }) => {
+const BarCode = ({ setIsBarCodeOpen, setItemCode }) => {
 	const [hasPermission, setHasPermission] = useState(null)
 	const [scanned, setScanned] = useState(false)
 
@@ -48,6 +48,8 @@ export const BarCode = ({ setIsBarCodeOpen, setItemCode }) => {
 		</>
 	)
 }
+
+export default BarCode
 
 const styles = StyleSheet.create({
 	container: {

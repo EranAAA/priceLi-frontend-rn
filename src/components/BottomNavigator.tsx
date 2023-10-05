@@ -7,7 +7,7 @@ import AppList from "../screens/AppList"
 import { AppBarCode } from "../screens/AppBarCode"
 
 export type BottomTabNavigatorParamList = {
-	מידע: undefined
+	בית: undefined
 	רשימה: undefined
 	ברקוד: undefined
 }
@@ -17,11 +17,11 @@ export const BottomTabs = () => {
 	return (
 		<Tab.Navigator screenOptions={{ tabBarStyle: { backgroundColor: "#25316D" }, tabBarInactiveTintColor: "#FFF", tabBarActiveTintColor: "#FEF5AC" }}>
 			<Tab.Screen
-				name='מידע'
+				name='בית'
 				component={AppHome}
 				options={{
 					headerShown: false,
-					tabBarLabel: "מידע",
+					tabBarLabel: "בית",
 					tabBarIcon: ({ color, size }) => <MaterialCommunityIcons name='information' color={color} size={size} />,
 				}}
 			/>

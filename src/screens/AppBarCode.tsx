@@ -2,7 +2,7 @@ import { useFocusEffect } from "@react-navigation/native"
 import React, { useEffect, useState } from "react"
 import { SafeAreaView, StyleSheet, View, Text } from "react-native"
 
-import { BarCode } from "../components/BarCode"
+import BarCode from "../components/app-barcode/BarCode"
 
 export const AppBarCode = ({ navigation }) => {
 	const [itemCode, setItemCode] = useState<number>(0)
@@ -32,7 +32,7 @@ export const AppBarCode = ({ navigation }) => {
 	)
 }
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create({ 
 	container: {
 		height: "100%",
 		justifyContent: "flex-start",

@@ -1,21 +1,20 @@
-import { StyleSheet, Text, View, Image, Dimensions, SafeAreaView } from "react-native"
-import React, { useContext, useEffect, useState } from "react"
+import { StyleSheet, Text, View, Dimensions, SafeAreaView } from "react-native"
+import React, { useContext, useState } from "react"
 import { StoreContext } from "../../Context"
 import { IItem } from "../interfaces/interfaces"
 import { useFocusEffect } from "@react-navigation/native"
+import ProductImage from "./shared/ProductImage"
 
 const dimensions = Dimensions.get("window")
 const imageWidth = dimensions.width
 
-export const ItemDetails = ({ route }) => {
+const ItemDetails = ({ route }) => {
 	const priceStore = useContext(StoreContext)
 	const item = priceStore.getItem
 
 	const [data, setData] = useState<IItem>()
 
 	useFocusEffect(() => {
-		console.log('ItemDetails: useEffect');
-		
 		if (route?.params?.item) setData(route.params.item)
 		else setData(item)
 	})
@@ -34,19 +33,24 @@ export const ItemDetails = ({ route }) => {
 					<Text style={styles.Quantity}>{`${data?.Quantity ? data?.Quantity : ""} ${data?.UnitQty ? data?.UnitQty : ""}`}</Text>
 				</View>
 
-				<Image style={styles.productImg} source={{ uri: `https://img.rami-levy.co.il/product/${data?.ItemCode}/small.jpg` }}></Image>
+				<ProductImage style={styles.productImg} ItemCode={data?.ItemCode}/>
 
-				<View style={styles.SaleContainer}>
-					<Text style={styles.title}>מבצע</Text>
-					<Text style={styles.PromotionDescription}>{data?.promotion?.M && data?.promotion?.M?.PromotionDescription}</Text>
-					<Text style={styles.DiscountRate}>{data?.promotion?.M?.DiscountRate && parseInt(data?.promotion.M?.DiscountRate) / 100 + "%"}</Text>
-					<Text style={styles.MinQty}>{data?.promotion?.M?.DiscountRate && "כמות מינמלית: " + data?.promotion?.M?.MinQty}</Text>
-					<Text style={styles.PromotionDate}>{data?.promotion?.M?.PromotionStartDate && `בתוקף: ${data?.promotion?.M?.PromotionStartDate} - ${data?.promotion?.M?.PromotionEndDate}`}</Text>
-				</View>
+				{data?.PromotionDescription && <Text style={styles.title}>מבצעים</Text>}
+				{!data?.PromotionDescription && <Text style={styles.title}>לא נמצאו מבצעים</Text>}
+				{data?.PromotionDescription && (
+					<View style={styles.SaleContainer}>
+						<Text style={styles.PromotionDescription}>{data?.PromotionDescription}</Text>
+						{data?.PromotionDiscountRate && <Text style={styles.DiscountRate}>{parseInt(data?.PromotionDiscountRate) / 100 + "%"}</Text>}
+						<Text style={styles.MinQty}>{"כמות מינמלית: " + data?.PromotionMinQty ?? "אין מידע"}</Text>
+						<Text style={styles.PromotionDate}>{`בתוקף: ${data?.PromotionStartDate} - ${data?.PromotionEndDate ?? "אין מידע"}`}</Text>
+					</View>
+				)}
 			</View>
 		</SafeAreaView>
 	)
 }
+
+export default ItemDetails
 
 const styles = StyleSheet.create({
 	container: {
@@ -60,70 +64,74 @@ const styles = StyleSheet.create({
 	ManufacturerName: {
 		textAlign: "left",
 		fontSize: 20,
-		fontFamily: "OpenSans-Light",
+		fontWeight: "300",
 	},
 	ItemName: {
 		textAlign: "left",
 		fontSize: 30,
-		fontFamily: "OpenSans-Light",
+		fontWeight: "300",
 	},
 	ItemCode: {
 		textAlign: "left",
 		fontSize: 16,
 		color: "gray",
-		fontFamily: "OpenSans-Medium",
+		fontWeight: "300",
 	},
 	ItemPrice: {
 		textAlign: "left",
 		fontSize: 40,
-		fontFamily: "OpenSans-Bold",
+		fontWeight: "600",
 	},
 	ItemPriceSymbol: {
 		textAlign: "left",
 		fontSize: 25,
-		fontFamily: "OpenSans-Light",
+		fontWeight: "600",
 	},
 	Quantity: {
 		textAlign: "left",
 		fontSize: 16,
-		fontFamily: "OpenSans-Medium",
+		fontWeight: "400",
 	},
 	productImg: {
-		height: "40%",
+		height: "35%",
 		width: imageWidth,
 		resizeMode: "contain",
 		justifyContent: "flex-start",
 		alignItems: "center",
 	},
-	SaleContainer: {
-		// direction: "rtl",
-		padding: 10,
-		borderTopWidth: 1,
-		borderTopColor: "lightgray",
-	},
 	title: {
 		textAlign: "left",
 		fontSize: 16,
-		fontFamily: "OpenSans-Medium",
+		paddingLeft: 20,
+		paddingTop: 10,
+		paddingBottom: "1%",
+		fontWeight: "600",
+	},
+	SaleContainer: {
+		paddingTop: 20,
+		paddingLeft: 20,
+		borderTopWidth: 1,
+		display: "flex",
+		rowGap: 5,
+		borderTopColor: "lightgray",
 	},
 	PromotionDescription: {
 		textAlign: "left",
 		fontSize: 16,
-		fontFamily: "OpenSans-Medium",
+		fontWeight: "400",
 	},
 	DiscountRate: {
 		textAlign: "left",
 		fontSize: 16,
-		fontFamily: "OpenSans-Medium",
+		fontWeight: "400",
 	},
 	MinQty: {
 		textAlign: "left",
 		fontSize: 16,
-		fontFamily: "OpenSans-Medium",
+		fontWeight: "400",
 	},
 	PromotionDate: {
 		textAlign: "left",
 		fontSize: 16,
-		fontFamily: "OpenSans-Medium",
 	},
 })

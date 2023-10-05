@@ -1,8 +1,9 @@
 import { observer } from "mobx-react"
-import React, { useContext, useState } from "react"
-import { Animated, Dimensions, FlatList, StyleSheet, Text, View, Image, SafeAreaView } from "react-native"
-import { Swipeable, TouchableOpacity } from "react-native-gesture-handler"
+import React, { useContext } from "react"
+import { Animated, Dimensions, FlatList, StyleSheet, Text, View, SafeAreaView } from "react-native"
+import { GestureHandlerRootView, Swipeable, TouchableHighlight, TouchableOpacity } from "react-native-gesture-handler"
 import { StoreContext } from "../../Context"
+import ProductImage from "../components/shared/ProductImage"
 import { IItem } from "../interfaces/interfaces"
 
 const DEVICE_WIDTH = Dimensions.get("window").width
@@ -12,57 +13,55 @@ const AppList = ({ navigation }) => {
 	const items = priceStore.getItems
 
 	const renderItem = (item: IItem) => (
-		// <Swipeable
-		// 	renderRightActions={(progress: Animated.AnimatedInterpolation<any>, dragX: Animated.AnimatedInterpolation<any>) => {
-		// 		const opacity = dragX.interpolate({
-		// 			inputRange: [-150, 0],
-		// 			outputRange: [1, 0],
-		// 			extrapolate: "clamp",
-		// 		})
+		<GestureHandlerRootView style={{ flex: 1 }}>
+			<Swipeable
+				renderRightActions={(progress: Animated.AnimatedInterpolation<any>, dragX: Animated.AnimatedInterpolation<any>) => {
+					const opacity = dragX.interpolate({
+						inputRange: [-150, 0],
+						outputRange: [1, 0],
+						extrapolate: "clamp",
+					})
 
-		// 		return (
-		// 			<View style={styles.swipedRow}>
-		// 				<Animated.View style={[styles.deleteButton, { opacity }]}>
-		// 					<TouchableOpacity onPress={() => priceStore.removeItem(item.ItemCode)}>
-		// 						<Text style={styles.deleteButtonText}>Delete</Text>
-		// 					</TouchableOpacity>
-		// 				</Animated.View>
-		// 			</View>
-		// 		)
-		// 	}}
-		// >
-		// 	<TouchableOpacity onPress={() => navigation.navigate("Details", { item })}>
-		// 		<View style={styles.row}>
-		// 			<Text style={styles.ManufacturerName}>{item.ManufacturerName}</Text>
-		// 			<Text style={styles.ItemName}>{item.ItemName}</Text>
-		// 			<Text style={styles.ItemCode}>{item.ItemCode}</Text>
-		// 			<Text style={styles.ItemPrice}>
-		// 				<Text style={styles.ItemPriceSymbol}>{`${"₪ "}`}</Text>
-		// 				{`${item.ItemPrice} `}
-		// 			</Text>
-		// 			<Text style={styles.Quantity}>{`${item.Quantity} ${item.UnitQty}`}</Text>
-		// 			{item?.PromotionDescription && <Text style={styles.promotion}>{item?.PromotionDescription}</Text>}
-		// 			<Image style={styles.productImg} source={{ uri: `https://img.rami-levy.co.il/product/${item?.ItemCode}/small.jpg` }}></Image>
-		// 		</View>
-		// 	</TouchableOpacity>
-		// </Swipeable>
-		<View style={styles.row}>
-			<Text style={styles.ManufacturerName}>{item.ManufacturerName}</Text>
-			<Text style={styles.ItemName}>{item.ItemName}</Text>
-			<Text style={styles.ItemCode}>{item.ItemCode}</Text>
-			<Text style={styles.ItemPrice}>
-				<Text style={styles.ItemPriceSymbol}>{`${"₪ "}`}</Text>
-				{`${item.ItemPrice} `}
-			</Text>
-			<Text style={styles.Quantity}>{`${item.Quantity} ${item.UnitQty}`}</Text>
-			{item?.PromotionDescription && <Text style={styles.promotion}>{item?.PromotionDescription}</Text>}
-			<Image style={styles.productImg} source={{ uri: `https://img.rami-levy.co.il/product/${item?.ItemCode}/small.jpg` }}></Image>
-		</View>
+					return (
+						<View style={styles.swipedRow}>
+							<Animated.View style={[styles.deleteButton, { opacity }]}>
+								<TouchableOpacity onPress={() => priceStore.removeItem(item.ItemCode)}>
+									<Text style={styles.deleteButtonText}>Delete</Text>
+								</TouchableOpacity>
+							</Animated.View>
+						</View>
+					)
+				}}
+			>
+				<TouchableHighlight
+					activeOpacity={0.4}
+					underlayColor='white'
+					onPress={() => {
+						navigation.navigate("Details", { item })
+					}}
+				>
+					<View style={styles.row}>
+						<Text style={styles.ManufacturerName}>{item.ManufacturerName}</Text>
+						<Text style={styles.ItemName}>{item.ItemName}</Text>
+						<Text style={styles.ItemCode}>{item.ItemCode}</Text>
+						<Text style={styles.ItemPrice}>
+							<Text style={styles.ItemPriceSymbol}>{`${"₪ "}`}</Text>
+							{`${item.ItemPrice} `}
+						</Text>
+						<Text style={styles.Quantity}>{`${item.Quantity} ${item.UnitQty}`}</Text>
+						{item?.PromotionDescription && <Text style={styles.promotion}>{item?.PromotionDescription}</Text>}
+						<ProductImage style={styles.productImg} ItemCode={item?.ItemCode}/>
+
+					</View>
+				</TouchableHighlight>
+			</Swipeable>
+		</GestureHandlerRootView>
 	)
 
 	return (
 		<SafeAreaView style={{ backgroundColor: "#5F6F94" }}>
 			<View style={styles.container}>
+				<Text style={styles.title}>היסטורית חיפושים</Text>
 				<FlatList data={items} renderItem={({ item }) => renderItem(item)} keyExtractor={item => item.ItemCode} />
 			</View>
 		</SafeAreaView>
@@ -77,6 +76,10 @@ const styles = StyleSheet.create({
 		justifyContent: "flex-start",
 		alignItems: "center",
 		backgroundColor: "#5F6F94",
+	},
+	title: {
+		padding: 15,
+		fontSize: 18,
 	},
 	row: {
 		flex: 1,
@@ -99,8 +102,6 @@ const styles = StyleSheet.create({
 		alignItems: "flex-end",
 	},
 	deleteButton: {
-		// color: '#1b1a17',
-		//   paddingHorizontal: 10,
 		fontWeight: "600",
 		paddingHorizontal: 30,
 		paddingVertical: 20,
@@ -124,32 +125,33 @@ const styles = StyleSheet.create({
 		textAlign: "left",
 		fontSize: 12,
 		color: "gray",
-		fontFamily: "OpenSans-Medium",
+		fontWeight: "400",
+
 	},
 	ManufacturerName: {
 		textAlign: "left",
 		fontSize: 15,
-		fontFamily: "OpenSans-Light",
+		fontWeight: "300",
+
 	},
 	ItemName: {
 		textAlign: "left",
 		fontSize: 15,
-		fontFamily: "OpenSans-Light",
+		fontWeight: "300",
 	},
 	ItemPrice: {
 		textAlign: "left",
 		fontSize: 16,
-		fontFamily: "OpenSans-Bold",
+		fontWeight: "500",
+
 	},
 	ItemPriceSymbol: {
 		textAlign: "left",
 		fontSize: 12,
-		fontFamily: "OpenSans-Light",
 	},
 	Quantity: {
 		textAlign: "left",
 		fontSize: 12,
-		fontFamily: "OpenSans-Medium",
 	},
 	productImg: {
 		position: "absolute",
@@ -162,7 +164,6 @@ const styles = StyleSheet.create({
 	},
 	promotion: {
 		position: "absolute",
-		fontFamily: "OpenSans-Light",
 		fontSize: 12,
 		top: "25%",
 		right: 140,
