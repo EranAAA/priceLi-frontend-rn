@@ -22,6 +22,10 @@ export interface IItem {
 	UnitOfMeasurePrice: string
 	UnitQty: string
 	bIsWeighted: string
+	promotions: IPromotion[]
+}
+
+export interface IPromotion {
 	PromotionId?: string
 	PromotionDescription?: string
 	PromotionEndDate?: string

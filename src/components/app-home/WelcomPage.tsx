@@ -33,7 +33,7 @@ const WelcomPage = ({ route, navigation }) => {
 				setMsg("")
 			} else setMsg(`לא נמצא מוצר  ${itemId}`)
 		} catch (error) {
-			console.log("error:", error)
+			console.log("error: fetchItem", error)
 		} finally {
 			setIsLoading(false)
 		}

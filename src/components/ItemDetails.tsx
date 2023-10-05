@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Dimensions, SafeAreaView } from "react-native"
+import { StyleSheet, Text, View, Dimensions, SafeAreaView, ScrollView } from "react-native"
 import React, { useContext, useState } from "react"
 import { StoreContext } from "../../Context"
 import { IItem } from "../interfaces/interfaces"
@@ -33,18 +33,21 @@ const ItemDetails = ({ route }) => {
 					<Text style={styles.Quantity}>{`${data?.Quantity ? data?.Quantity : ""} ${data?.UnitQty ? data?.UnitQty : ""}`}</Text>
 				</View>
 
-				<ProductImage style={styles.productImg} ItemCode={data?.ItemCode}/>
+				<ProductImage style={styles.productImg} ItemCode={data?.ItemCode} />
 
-				{data?.PromotionDescription && <Text style={styles.title}>מבצעים</Text>}
-				{!data?.PromotionDescription && <Text style={styles.title}>לא נמצאו מבצעים</Text>}
-				{data?.PromotionDescription && (
-					<View style={styles.SaleContainer}>
-						<Text style={styles.PromotionDescription}>{data?.PromotionDescription}</Text>
-						{data?.PromotionDiscountRate && <Text style={styles.DiscountRate}>{parseInt(data?.PromotionDiscountRate) / 100 + "%"}</Text>}
-						<Text style={styles.MinQty}>{"כמות מינמלית: " + data?.PromotionMinQty ?? "אין מידע"}</Text>
-						<Text style={styles.PromotionDate}>{`בתוקף: ${data?.PromotionStartDate} - ${data?.PromotionEndDate ?? "אין מידע"}`}</Text>
-					</View>
-				)}
+				{<Text style={styles.title}>{data?.promotions.length ? "מבצעים" : "לא נמצאו מבצעים"}</Text>}
+
+				<ScrollView>
+					{data?.promotions.length >= 1 &&
+						data?.promotions.map(promo => (
+							<View key={promo.PromotionId} style={styles.SaleContainer}>
+								<Text style={styles.PromotionDescription}>{promo.PromotionDescription}</Text>
+								{promo.PromotionDiscountRate && <Text style={styles.DiscountRate}>{"אחוז הנחה: " + parseInt(promo.PromotionDiscountRate) / 100 + "%"}</Text>}
+								<Text style={styles.MinQty}>{"כמות מינמלית: " + promo.PromotionMinQty ?? "אין מידע"}</Text>
+								<Text style={styles.PromotionDate}>{`בתוקף: ${new Date(promo.PromotionEndDate).toLocaleDateString()} - ${new Date(promo.PromotionStartDate).toLocaleDateString()}`}</Text>
+							</View>
+						))}
+				</ScrollView>
 			</View>
 		</SafeAreaView>
 	)
@@ -108,8 +111,7 @@ const styles = StyleSheet.create({
 		fontWeight: "600",
 	},
 	SaleContainer: {
-		paddingTop: 20,
-		paddingLeft: 20,
+		padding: 20,
 		borderTopWidth: 1,
 		display: "flex",
 		rowGap: 5,

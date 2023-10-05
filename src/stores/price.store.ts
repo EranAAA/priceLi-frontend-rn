@@ -16,10 +16,8 @@ export class PriceStore {
 		const priceService = new PriceService()
 		try {
 			const item = await priceService.queryItem(itemId)
-			console.log('====================================');
-			console.log(item);
-			console.log('====================================');
 			if (item?.ItemName) {
+				console.log("item", item)
 				this.setItem(item)
 				this.setItems(item)
 			} else this.setItem(null)
@@ -58,7 +56,7 @@ export class PriceStore {
 			this.items = [item]
 			await priceService.storeData([item])
 		} else {
-			const idx = this.items.findIndex((i) => i.ItemCode === item.ItemCode)
+			const idx = this.items.findIndex(i => i.ItemCode === item.ItemCode)
 			if (idx >= 0) this.items[idx] = item
 			else this.items.unshift(item)
 			await priceService.storeData(this.items)

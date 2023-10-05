@@ -49,9 +49,8 @@ const AppList = ({ navigation }) => {
 							{`${item.ItemPrice} `}
 						</Text>
 						<Text style={styles.Quantity}>{`${item.Quantity} ${item.UnitQty}`}</Text>
-						{item?.PromotionDescription && <Text style={styles.promotion}>{item?.PromotionDescription}</Text>}
-						<ProductImage style={styles.productImg} ItemCode={item?.ItemCode}/>
-
+						{item?.promotions?.length >= 1 && <Text style={styles.promotion}>{item?.promotions?.length && item?.promotions[0]?.PromotionDescription}</Text>}
+						<ProductImage style={styles.productImg} ItemCode={item?.ItemCode} />
 					</View>
 				</TouchableHighlight>
 			</Swipeable>
@@ -59,7 +58,7 @@ const AppList = ({ navigation }) => {
 	)
 
 	return (
-		<SafeAreaView style={{ backgroundColor: "#FFFFFF"}}>
+		<SafeAreaView style={{ backgroundColor: "#FFFFFF" }}>
 			<View style={styles.container}>
 				<Text style={styles.title}>היסטורית חיפושים</Text>
 				<FlatList data={items} renderItem={({ item }) => renderItem(item)} keyExtractor={item => item.ItemCode} />
@@ -126,13 +125,11 @@ const styles = StyleSheet.create({
 		fontSize: 12,
 		color: "gray",
 		fontWeight: "400",
-
 	},
 	ManufacturerName: {
 		textAlign: "left",
 		fontSize: 15,
 		fontWeight: "300",
-
 	},
 	ItemName: {
 		textAlign: "left",
@@ -143,7 +140,6 @@ const styles = StyleSheet.create({
 		textAlign: "left",
 		fontSize: 16,
 		fontWeight: "500",
-
 	},
 	ItemPriceSymbol: {
 		textAlign: "left",
