@@ -20,6 +20,7 @@ const BarCode = ({ setIsBarCodeOpen, setItemCode }) => {
 	}, [])
 
 	const handleBarCodeScanned = ({ type, data }) => {
+		console.log("Scanned", data, type);
 		setScanned(true)
 		setIsBarCodeOpen(false)
 		setItemCode(data)

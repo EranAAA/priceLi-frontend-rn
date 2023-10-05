@@ -59,7 +59,7 @@ const AppList = ({ navigation }) => {
 	)
 
 	return (
-		<SafeAreaView style={{ backgroundColor: "#5F6F94" }}>
+		<SafeAreaView style={{ backgroundColor: "#FFFFFF"}}>
 			<View style={styles.container}>
 				<Text style={styles.title}>היסטורית חיפושים</Text>
 				<FlatList data={items} renderItem={({ item }) => renderItem(item)} keyExtractor={item => item.ItemCode} />
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
 		width: DEVICE_WIDTH,
 		justifyContent: "flex-start",
 		alignItems: "center",
-		backgroundColor: "#5F6F94",
+		// backgroundColor: "#5F6F94",
 	},
 	title: {
 		padding: 15,
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
 	},
 	row: {
 		flex: 1,
-		backgroundColor: "white",
+		backgroundColor: "#FFFFFF",
 		width: DEVICE_WIDTH,
 		textAlign: "left",
 		padding: 15,
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
 		height: 130,
 		borderColor: "#D7D8DA",
 		borderBottomWidth: 1,
-		backgroundColor: "#FFF",
+		backgroundColor: "#FFFFFF",
 		marginBottom: 1,
 	},
 	ItemCode: {

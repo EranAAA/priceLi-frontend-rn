@@ -20,7 +20,7 @@ const ItemDetails = ({ route }) => {
 	})
 
 	return (
-		<SafeAreaView style={{ backgroundColor: "#5F6F94" }}>
+		<SafeAreaView style={{ backgroundColor: "#FFFFFF" }}>
 			<View style={styles.container}>
 				<View style={styles.ItemContainer}>
 					<Text style={styles.ManufacturerName}>{data?.ManufacturerName && data?.ManufacturerName}</Text>

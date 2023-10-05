@@ -13,9 +13,13 @@ export const ItemSearchField = ({ setItemCode, itemCode }) => {
 		}
 	}, [number])
 
+	useEffect(() => {
+		onChangeNumber(itemCode ? String(itemCode) : "")
+	}, [itemCode])
+
 	return (
 		<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-			<View style={{ flex: 1, backgroundColor: 'transparent' }}>
+			<View style={{ flex: 1, backgroundColor: "transparent" }}>
 				<TextInput style={styles.input} onChangeText={onChangeNumber} value={number} placeholder='חפש ברקוד (13 תווים)' keyboardType='numeric' />
 			</View>
 		</TouchableWithoutFeedback>
@@ -33,7 +37,7 @@ const styles = StyleSheet.create({
 
 		textAlign: "center",
 		fontFamily: "OpenSans-Medium",
-
-		backgroundColor: "#FFFFFF",
+		borderBottomColor: "#25316D",
+		borderBottomWidth : 1.0
 	},
 })
