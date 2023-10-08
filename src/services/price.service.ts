@@ -10,8 +10,9 @@ const KEY = "item"
 export class PriceService {
 	async queryItem(itemId: number) {
 		try {
-			const items: IItemGroup = await axios.get(`https://ytg6de3onb.execute-api.us-east-1.amazonaws.com/getItem?ItemCode=${itemId}`)
-			if (items?.stores.length) return items
+			const items = await axios.get(`https://ytg6de3onb.execute-api.us-east-1.amazonaws.com/getItem?ItemCode=${itemId}`)
+			const data = items.data
+			if (data?.stores.length) return data as IItemGroup 
 		} catch (error) {
 			console.log("Got error: ", error)
 		}
