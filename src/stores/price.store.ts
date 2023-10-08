@@ -1,11 +1,11 @@
 import { makeAutoObservable } from "mobx"
 
 import { PriceService } from "../services/price.service"
-import { IItem } from "../interfaces/interfaces"
+import { IItem, IItemGroup } from "../interfaces/interfaces"
 
 export class PriceStore {
-	private items: IItem[] = []
-	private item: IItem
+	private items: IItemGroup[] = []
+	private item: IItemGroup
 
 	constructor(private readonly priceService: PriceService) {
 		makeAutoObservable(this)
@@ -16,7 +16,9 @@ export class PriceStore {
 		const priceService = new PriceService()
 		try {
 			const item = await priceService.queryItem(itemId)
-			if (item?.ItemName) {
+			console.log("item", item)
+
+			if (item?.stores.length) {
 				console.log("item", item)
 				this.setItem(item)
 				this.setItems(item)
@@ -43,27 +45,27 @@ export class PriceStore {
 	removeItem = async (itemCode: string) => {
 		const priceService = new PriceService()
 		try {
-			this.items = this.items.filter(item => item.ItemCode !== itemCode)
+			this.items = this.items.filter(item => item.itemCode !== itemCode)
 			await priceService.storeData(this.items)
 		} catch (error) {
 			console.log("error:", error)
 		}
 	}
 
-	private async setItems(item: IItem) {
+	private async setItems(item: IItemGroup) {
 		const priceService = new PriceService()
 		if (!this.items) {
 			this.items = [item]
 			await priceService.storeData([item])
 		} else {
-			const idx = this.items.findIndex(i => i.ItemCode === item.ItemCode)
+			const idx = this.items.findIndex(i => i.itemCode === item.itemCode)
 			if (idx >= 0) this.items[idx] = item
 			else this.items.unshift(item)
 			await priceService.storeData(this.items)
 		}
 	}
 
-	private setItem(item: IItem) {
+	private setItem(item: IItemGroup) {
 		this.item = item
 	}
 

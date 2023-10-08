@@ -4,6 +4,12 @@ export interface IItemFilter {
 	landingAirport?: string
 }
 
+export interface IItemGroup {
+	date: string
+	itemCode: string
+	stores: IItem[]
+}
+
 export interface IItem {
 	ItemCode: string
 	AllowDiscount: string
@@ -23,6 +29,7 @@ export interface IItem {
 	UnitQty: string
 	bIsWeighted: string
 	promotions: IPromotion[]
+	store: IStore
 }
 
 export interface IPromotion {
@@ -38,4 +45,14 @@ export interface IPromotion {
 	PromotionWeightUnit?: string | null
 	PromotionDiscountRate?: string | null
 	PromotionItemCode?: string[]
+}
+
+export interface IStore {
+	StoreId: string
+	BikoretNo: string
+	StoreType: string
+	StoreName: string
+	Address: string
+	City: string
+	ZipCode: string
 }

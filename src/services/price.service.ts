@@ -1,7 +1,7 @@
 import axios from "axios"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 
-import { IItem } from "../interfaces/interfaces"
+import { IItem, IItemGroup } from "../interfaces/interfaces"
 import { storageService } from "../services/storage.service"
 
 const BASE_URL = process.env.NODE_ENV === "production" ? "/api" : "http://192.168.1.236:3030/api"
@@ -10,14 +10,14 @@ const KEY = "item"
 export class PriceService {
 	async queryItem(itemId: number) {
 		try {
-			const { data }: { data: IItem } = await axios.get(`https://ytg6de3onb.execute-api.us-east-1.amazonaws.com/getItem?ItemCode=${itemId}`)
-			if (data?.ItemCode) return data
+			const items: IItemGroup = await axios.get(`https://ytg6de3onb.execute-api.us-east-1.amazonaws.com/getItem?ItemCode=${itemId}`)
+			if (items?.stores.length) return items
 		} catch (error) {
 			console.log("Got error: ", error)
 		}
 	}
 
-	async storeData(item: IItem[]) {
+	async storeData(item: IItemGroup[]) {
 		try {
 			const jsonValue = JSON.stringify(item)
 			// console.log('jsonValue',jsonValue);

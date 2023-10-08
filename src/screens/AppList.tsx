@@ -61,7 +61,7 @@ const AppList = ({ navigation }) => {
 		<SafeAreaView style={{ backgroundColor: "#FFFFFF" }}>
 			<View style={styles.container}>
 				<Text style={styles.title}>היסטורית חיפושים</Text>
-				<FlatList data={items} renderItem={({ item }) => renderItem(item)} keyExtractor={item => item.ItemCode} />
+				<FlatList data={items} renderItem={({ item }) => renderItem(item.stores[0])} keyExtractor={item => item.itemCode} />
 			</View>
 		</SafeAreaView>
 	)

@@ -16,7 +16,7 @@ const ItemDetails = ({ route }) => {
 
 	useFocusEffect(() => {
 		if (route?.params?.item) setData(route.params.item)
-		else setData(item)
+		else setData(item.stores[0])
 	})
 
 	return (
