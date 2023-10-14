@@ -4,7 +4,7 @@ import { Animated, Dimensions, FlatList, StyleSheet, Text, View, SafeAreaView } 
 import { GestureHandlerRootView, Swipeable, TouchableHighlight, TouchableOpacity } from "react-native-gesture-handler"
 import { StoreContext } from "../../Context"
 import ProductImage from "../components/shared/ProductImage"
-import { IItem } from "../interfaces/interfaces"
+import { IItemGroup } from "../interfaces/interfaces"
 
 const DEVICE_WIDTH = Dimensions.get("window").width
 
@@ -12,7 +12,7 @@ const AppList = ({ navigation }) => {
 	const priceStore = useContext(StoreContext)
 	const items = priceStore.getItems
 
-	const renderItem = (item: IItem) => (
+	const renderItem = (item: IItemGroup, idx: number) => (
 		<GestureHandlerRootView style={{ flex: 1 }}>
 			<Swipeable
 				renderRightActions={(progress: Animated.AnimatedInterpolation<any>, dragX: Animated.AnimatedInterpolation<any>) => {
@@ -25,7 +25,7 @@ const AppList = ({ navigation }) => {
 					return (
 						<View style={styles.swipedRow}>
 							<Animated.View style={[styles.deleteButton, { opacity }]}>
-								<TouchableOpacity onPress={() => priceStore.removeItem(item.ItemCode)}>
+								<TouchableOpacity onPress={() => priceStore.removeItem(item.itemCode)}>
 									<Text style={styles.deleteButtonText}>Delete</Text>
 								</TouchableOpacity>
 							</Animated.View>
@@ -41,16 +41,17 @@ const AppList = ({ navigation }) => {
 					}}
 				>
 					<View style={styles.row}>
-						<Text style={styles.ManufacturerName}>{item.ManufacturerName}</Text>
-						<Text style={styles.ItemName}>{item.ItemName}</Text>
-						<Text style={styles.ItemCode}>{item.ItemCode}</Text>
+						<Text style={styles.StoreName}>{item.stores[0].store.StoreName}</Text>
+						<Text style={styles.ManufacturerName}>{item.stores[0].ManufacturerName}</Text>
+						<Text style={styles.ItemName}>{item.stores[0].ItemName}</Text>
+						<Text style={styles.ItemCode}>{item.stores[0].ItemCode}</Text>
 						<Text style={styles.ItemPrice}>
 							<Text style={styles.ItemPriceSymbol}>{`${"₪ "}`}</Text>
-							{`${item.ItemPrice} `}
+							{`${item.stores[0].ItemPrice} `}
 						</Text>
-						<Text style={styles.Quantity}>{`${item.Quantity} ${item.UnitQty}`}</Text>
-						{item?.promotions?.length >= 1 && <Text style={styles.promotion}>{item?.promotions?.length && item?.promotions[0]?.PromotionDescription}</Text>}
-						<ProductImage style={styles.productImg} ItemCode={item?.ItemCode} />
+						<Text style={styles.Quantity}>{`${item.stores[0].Quantity} ${item.stores[0].UnitQty}`}</Text>
+						{item?.stores[0].promotions?.length >= 1 && <Text style={styles.promotion}>{item?.stores[0].promotions?.length && item?.stores[0].promotions[0]?.PromotionDescription}</Text>}
+						<ProductImage style={styles.productImg} ItemCode={item?.stores[0].ItemCode} />
 					</View>
 				</TouchableHighlight>
 			</Swipeable>
@@ -61,7 +62,7 @@ const AppList = ({ navigation }) => {
 		<SafeAreaView style={{ backgroundColor: "#FFFFFF" }}>
 			<View style={styles.container}>
 				<Text style={styles.title}>היסטורית חיפושים</Text>
-				<FlatList data={items} renderItem={({ item }) => renderItem(item.stores[0])} keyExtractor={item => item.itemCode} />
+				<FlatList data={items} renderItem={({ item, index }) => renderItem(item, index)} keyExtractor={item => item.itemCode} />
 			</View>
 		</SafeAreaView>
 	)
@@ -126,6 +127,11 @@ const styles = StyleSheet.create({
 		color: "gray",
 		fontWeight: "400",
 	},
+	StoreName: {
+		textAlign: "center",
+		fontSize: 15,
+		fontWeight: "300",
+	},
 	ManufacturerName: {
 		textAlign: "left",
 		fontSize: 15,
@@ -151,6 +157,7 @@ const styles = StyleSheet.create({
 	},
 	productImg: {
 		position: "absolute",
+		top: -100,
 		right: 10,
 		height: 120,
 		width: 100,

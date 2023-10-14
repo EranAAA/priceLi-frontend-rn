@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Dimensions, SafeAreaView, ScrollView } from "react-native"
+import { StyleSheet, Text, View, Dimensions, SafeAreaView, ScrollView, FlatList, Image, TouchableOpacity } from "react-native"
 import React, { useContext, useState } from "react"
 import { StoreContext } from "../../Context"
 import { IItem } from "../interfaces/interfaces"
@@ -12,32 +12,47 @@ const ItemDetails = ({ route }) => {
 	const priceStore = useContext(StoreContext)
 	const item = priceStore.getItem
 
-	const [data, setData] = useState<IItem>()
+	const [data, setData] = useState<IItem[]>()
 
 	useFocusEffect(() => {
-		if (route?.params?.item) setData(route.params.item)
-		else setData(item.stores[0])
+		if (route?.params?.item) {
+			const sorted = route?.params?.item.stores.sort((a: any, b: any) => +a.ItemPrice - +b.ItemPrice)
+			setData(sorted)
+		} else {
+			const sorted = item.stores.sort((a: any, b: any) => +a.ItemPrice - +b.ItemPrice)
+			setData(sorted)
+		}
 	})
+
+	if (!data) return
 
 	return (
 		<SafeAreaView style={{ backgroundColor: "#FFFFFF" }}>
 			<View style={styles.container}>
 				<View style={styles.ItemContainer}>
-					<Text style={styles.ManufacturerName}>{data?.ManufacturerName && data?.ManufacturerName}</Text>
-					<Text style={styles.ItemName}>{data?.ItemName && data?.ItemName}</Text>
-					<Text style={styles.ItemCode}>{data?.ItemCode && `ברקוד: ${data?.ItemCode}`}</Text>
-					<Text style={styles.ItemPrice}>
-						<Text style={styles.ItemPriceSymbol}>{`${data?.ItemPrice ? "₪ " : ""}`}</Text>
-						{`${data?.ItemPrice ? data?.ItemPrice : ""} `}
-					</Text>
-					<Text style={styles.Quantity}>{`${data?.Quantity ? data?.Quantity : ""} ${data?.UnitQty ? data?.UnitQty : ""}`}</Text>
+					<Text style={styles.ManufacturerName}>{data[0]?.ManufacturerName && data[0]?.ManufacturerName}</Text>
+					<Text style={styles.ItemName}>{data[0]?.ItemName && data[0]?.ItemName}</Text>
+					<Text style={styles.ItemCode}>{data[0]?.ItemCode && `ברקוד: ${data[0]?.ItemCode}`}</Text>
+					<Text style={styles.Quantity}>{`${data[0]?.Quantity ? data[0]?.Quantity : ""} ${data[0]?.UnitQty ? data[0]?.UnitQty : ""}`}</Text>
+					<ProductImage style={styles.productImg} ItemCode={data[0]?.ItemCode} />
+					<FlatList
+						data={data}
+						renderItem={({ item }) => (
+							<View style={styles.Row}>
+								<View style={styles.PricesRow}>
+									<Text style={styles.ItemPrice}>{`${item.store.StoreName}`}</Text>
+									<Text style={styles.ItemPrice}>{`${item?.ItemPrice} ₪`}</Text>
+								</View>
+								<View style={styles.SaleRow}>
+									<Text style={styles.SaleTitle}>{item?.promotions.length ? "מבצעים" : "לא נמצאו מבצעים"}</Text>
+								</View>
+							</View>
+						)}
+						keyExtractor={item => item.ItemId}
+					/>
 				</View>
 
-				<ProductImage style={styles.productImg} ItemCode={data?.ItemCode} />
-
-				{<Text style={styles.title}>{data?.promotions.length ? "מבצעים" : "לא נמצאו מבצעים"}</Text>}
-
-				<ScrollView>
+				{/* <ScrollView>
 					{data?.promotions.length >= 1 &&
 						data?.promotions.map(promo => (
 							<View key={promo.PromotionId} style={styles.SaleContainer}>
@@ -47,7 +62,7 @@ const ItemDetails = ({ route }) => {
 								<Text style={styles.PromotionDate}>{`בתוקף: ${new Date(promo.PromotionEndDate).toLocaleDateString()} - ${new Date(promo.PromotionStartDate).toLocaleDateString()}`}</Text>
 							</View>
 						))}
-				</ScrollView>
+				</ScrollView> */}
 			</View>
 		</SafeAreaView>
 	)
@@ -80,14 +95,40 @@ const styles = StyleSheet.create({
 		color: "gray",
 		fontWeight: "300",
 	},
+	Row: {
+		height: 80,
+		textAlign: "left",
+		fontSize: 16,
+		borderColor: "#D7D8DA",
+		borderBottomWidth: 1,
+		marginBottom: 1,
+		flexDirection: "column",
+		// justifyContent: "space-between",
+		// alignItems: "center",
+	},
+	PricesRow: {
+		textAlign: "left",
+		fontSize: 16,
+		flexDirection: "row",
+		justifyContent: "space-between",
+		alignItems: "center",
+	},
+	SaleRow: {
+		textAlign: "left",
+		fontSize: 16,
+		flexDirection: "row",
+		justifyContent: "flex-start",
+		alignItems: "center",
+	},
 	ItemPrice: {
 		textAlign: "left",
-		fontSize: 40,
+		fontSize: 20,
 		fontWeight: "600",
+		paddingTop: "2.5%",
 	},
 	ItemPriceSymbol: {
 		textAlign: "left",
-		fontSize: 25,
+		fontSize: 20,
 		fontWeight: "600",
 	},
 	Quantity: {
@@ -96,17 +137,17 @@ const styles = StyleSheet.create({
 		fontWeight: "400",
 	},
 	productImg: {
-		height: "35%",
-		width: imageWidth,
+		height: "100%",
+		maxHeight: "100%",
+		width: "100%", // imageWidth,
+		marginBottom: "4%",
 		resizeMode: "contain",
-		justifyContent: "flex-start",
-		alignItems: "center",
 	},
-	title: {
+	SaleTitle: {
 		textAlign: "left",
-		fontSize: 16,
-		paddingLeft: 20,
-		paddingTop: 10,
+		fontSize: 13,
+		// paddingLeft: 20,
+		// paddingTop: 10,
 		paddingBottom: "1%",
 		fontWeight: "600",
 	},

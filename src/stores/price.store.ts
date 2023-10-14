@@ -16,8 +16,6 @@ export class PriceStore {
 		const priceService = new PriceService()
 		try {
 			const item = await priceService.queryItem(itemId)
-			console.log("item", item)
-
 			if (item?.stores.length) {
 				console.log("item", item)
 				this.setItem(item)

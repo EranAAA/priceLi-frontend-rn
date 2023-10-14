@@ -46,11 +46,13 @@ const WelcomPage = ({ route, navigation }) => {
 				<View style={styles.searchBar}>
 					<ItemSearchField setItemCode={setItemCode} itemCode={itemCode} />
 				</View>
-				<View style={styles.infoWrapper}>
+
+				{/* <View style={styles.infoWrapper}>
 					<Text style={styles.info}>רשת: רמי לוי</Text>
 					<Text style={styles.info}>סניף: ביג פרדס חנה</Text>
 					<Text style={styles.info}>תאריך עדכון: 31/10/2023</Text>
-				</View>
+				</View> */}
+
 				{!isLoading && msg && <Text style={styles.msg}>{msg}</Text>}
 				{isLoading && <LoadingIndicator />}
 			</View>
