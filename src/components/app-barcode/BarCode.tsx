@@ -20,7 +20,7 @@ const BarCode = ({ setIsBarCodeOpen, setItemCode }) => {
 	}, [])
 
 	const handleBarCodeScanned = ({ type, data }) => {
-		console.log("Scanned", data, type);
+		console.log("Scanned", data, type)
 		setScanned(true)
 		setIsBarCodeOpen(false)
 		setItemCode(data)
@@ -34,52 +34,48 @@ const BarCode = ({ setIsBarCodeOpen, setItemCode }) => {
 	}
 
 	return (
-		<>
-			<BarCodeScanner onBarCodeScanned={scanned ? undefined : handleBarCodeScanned} style={styles.container} />
-			<View style={styles.buttonContainer}>
-				{/* <Pressable style={styles.button} onPress={() => setIsBarCodeOpen(false)}>
-					<Text style={styles.text}>{"סגור"}</Text>
-				</Pressable> */}
-				{/* {scanned && (
-					<Pressable style={styles.button} onPress={() => setScanned(false)}>
-						<Text style={styles.text}>{"לחץ כאן כדי לסרוק שוב"}</Text>
-					</Pressable>
-				)} */}
+		<BarCodeScanner onBarCodeScanned={scanned ? undefined : handleBarCodeScanned} style={[StyleSheet.absoluteFill, styles.container]}>
+			<View style={styles.layerTop} />
+			<View style={styles.layerCenter}>
+				<View style={styles.layerLeft} />
+				<View style={styles.focused} />
+				<View style={styles.layerRight} />
 			</View>
-		</>
+			<View style={styles.layerBottom} />
+		</BarCodeScanner>
 	)
 }
 
 export default BarCode
 
+const opacity = "rgba(0, 0, 0, .6)"
+
 const styles = StyleSheet.create({
 	container: {
-		position: "absolute",
-		bottom: 0,
-		height: DEVICE_HEIGHT,
-		width: DEVICE_WIDTH,
+		flex: 1,
+		flexDirection: "column",
 	},
-	buttonContainer: {
-		position: "absolute",
-		top: 10,
-		height: DEVICE_HEIGHT - 100,
-		justifyContent: "space-between",
-		alignItems: "center",
+	layerTop: {
+		flex: 2,
+		backgroundColor: opacity,
 	},
-	button: {
-		alignItems: "center",
-		justifyContent: "center",
-		paddingVertical: 12,
-		paddingHorizontal: 32,
-		borderRadius: 4,
-		elevation: 3,
-		backgroundColor: "black",
+	layerCenter: {
+		flex: 1,
+		flexDirection: "row",
 	},
-	text: {
-		fontSize: 16,
-		lineHeight: 21,
-		fontWeight: "bold",
-		letterSpacing: 0.25,
-		color: "white",
+	layerLeft: {
+		flex: 1,
+		backgroundColor: opacity,
+	},
+	focused: {
+		flex: 10,
+	},
+	layerRight: {
+		flex: 1,
+		backgroundColor: opacity,
+	},
+	layerBottom: {
+		flex: 2,
+		backgroundColor: opacity,
 	},
 })

@@ -41,16 +41,18 @@ const AppList = ({ navigation }) => {
 					}}
 				>
 					<View style={styles.row}>
-						<Text style={styles.StoreName}>{item.stores[0].store.StoreName}</Text>
+						{/* <Text style={styles.StoreName}>{item.stores[0].store.StoreName}</Text> */}
 						<Text style={styles.ManufacturerName}>{item.stores[0].ManufacturerName}</Text>
 						<Text style={styles.ItemName}>{item.stores[0].ItemName}</Text>
 						<Text style={styles.ItemCode}>{item.stores[0].ItemCode}</Text>
 						<Text style={styles.ItemPrice}>
 							<Text style={styles.ItemPriceSymbol}>{`${"₪ "}`}</Text>
-							{`${item.stores[0].ItemPrice} `}
+							{`${item.stores[0].ItemPrice} - `}
+							<Text style={styles.ItemPriceSymbol}>{`${"₪ "}`}</Text>
+							{`${item.stores[item.stores.length - 1].ItemPrice}`}
 						</Text>
 						<Text style={styles.Quantity}>{`${item.stores[0].Quantity} ${item.stores[0].UnitQty}`}</Text>
-						{item?.stores[0].promotions?.length >= 1 && <Text style={styles.promotion}>{item?.stores[0].promotions?.length && item?.stores[0].promotions[0]?.PromotionDescription}</Text>}
+						{/* {item?.stores[0].promotions?.length >= 1 && <Text style={styles.promotion}>{item?.stores[0].promotions?.length && item?.stores[0].promotions[0]?.PromotionDescription}</Text>} */}
 						<ProductImage style={styles.productImg} ItemCode={item?.stores[0].ItemCode} />
 					</View>
 				</TouchableHighlight>

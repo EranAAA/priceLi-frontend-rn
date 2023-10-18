@@ -17,9 +17,11 @@ export class PriceStore {
 		try {
 			const item = await priceService.queryItem(itemId)
 			if (item?.stores.length) {
-				console.log("item", item)
-				this.setItem(item)
-				this.setItems(item)
+				const sortedItemStores = item.stores.sort((a: any, b: any) => +a.ItemPrice - +b.ItemPrice)
+				const updatedItem = {...item, stores: sortedItemStores}
+				console.log("item", updatedItem)
+				this.setItem(updatedItem)
+				this.setItems(updatedItem)
 			} else this.setItem(null)
 			return item
 		} catch (error) {

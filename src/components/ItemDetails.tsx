@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View, Dimensions, SafeAreaView, ScrollView, FlatList, Image, TouchableOpacity } from "react-native"
-import React, { useContext, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
+import * as Clipboard from "expo-clipboard"
 import { StoreContext } from "../../Context"
 import { IItem } from "../interfaces/interfaces"
 import { useFocusEffect } from "@react-navigation/native"
@@ -13,6 +14,7 @@ const ItemDetails = ({ route }) => {
 	const item = priceStore.getItem
 
 	const [data, setData] = useState<IItem[]>()
+	const [isCopied, setIsCopied] = useState<boolean>(false)
 
 	useFocusEffect(() => {
 		if (route?.params?.item) {
@@ -24,6 +26,15 @@ const ItemDetails = ({ route }) => {
 		}
 	})
 
+	useEffect(() => {
+		setIsCopied(false)
+	}, [data])
+
+	const copyToClipboard = async (ItemCode: string) => {
+		await Clipboard.setStringAsync(ItemCode)
+		setIsCopied(true)
+	}
+
 	if (!data) return
 
 	return (
@@ -32,19 +43,37 @@ const ItemDetails = ({ route }) => {
 				<View style={styles.ItemContainer}>
 					<Text style={styles.ManufacturerName}>{data[0]?.ManufacturerName && data[0]?.ManufacturerName}</Text>
 					<Text style={styles.ItemName}>{data[0]?.ItemName && data[0]?.ItemName}</Text>
-					<Text style={styles.ItemCode}>{data[0]?.ItemCode && `ברקוד: ${data[0]?.ItemCode}`}</Text>
+					<TouchableOpacity onPress={() => copyToClipboard(data[0]?.ItemCode)}>
+						<Text style={{ ...styles.ItemCode, color: isCopied ? "green" : "black" }}>{data[0]?.ItemCode && `${data[0]?.ItemCode}`}</Text>
+					</TouchableOpacity>
+
 					<Text style={styles.Quantity}>{`${data[0]?.Quantity ? data[0]?.Quantity : ""} ${data[0]?.UnitQty ? data[0]?.UnitQty : ""}`}</Text>
 					<ProductImage style={styles.productImg} ItemCode={data[0]?.ItemCode} />
 					<FlatList
 						data={data}
+						style={styles.FlatListWrapper}
 						renderItem={({ item }) => (
 							<View style={styles.Row}>
 								<View style={styles.PricesRow}>
-									<Text style={styles.ItemPrice}>{`${item.store.StoreName}`}</Text>
-									<Text style={styles.ItemPrice}>{`${item?.ItemPrice} ₪`}</Text>
+									<Text style={styles.StoreName}>{`${item.store.StoreName}`}</Text>
+									<View style={styles.ItemPriceWrapper}>
+										<Text style={styles.ItemPrice}>{`${item?.ItemPrice} ₪`}</Text>
+										{item.promotions.map(
+											promo =>
+												promo.PromotionDiscountedPrice &&
+												+promo.PromotionMinQty === 1 && <Text style={styles.ItemPriceSale} key={promo.PromotionId}>{`${promo.PromotionDiscountedPrice} ₪`}</Text>
+										)}
+									</View>
 								</View>
 								<View style={styles.SaleRow}>
-									<Text style={styles.SaleTitle}>{item?.promotions.length ? "מבצעים" : "לא נמצאו מבצעים"}</Text>
+									{/* <Text style={styles.SaleTitle}>{item?.promotions.length ? "מבצעים" : "לא נמצאו מבצעים"}</Text> */}
+									{item.promotions.map(
+										promo =>
+											promo.PromotionDiscountedPrice &&
+											+promo.PromotionMinQty > 1 && (
+												<Text style={styles.ItemPriceSale} key={promo.PromotionId}>{`${promo.PromotionDescription} => ${(+promo.PromotionDiscountedPrice / +promo.PromotionMinQty).toFixed(2)} ₪`}</Text>
+											)
+									)}
 								</View>
 							</View>
 						)}
@@ -95,23 +124,23 @@ const styles = StyleSheet.create({
 		color: "gray",
 		fontWeight: "300",
 	},
+	FlatListWrapper: {
+		paddingTop: 10,
+	},
 	Row: {
 		height: 80,
 		textAlign: "left",
 		fontSize: 16,
 		borderColor: "#D7D8DA",
 		borderBottomWidth: 1,
-		marginBottom: 1,
+		padding: 10,
 		flexDirection: "column",
-		// justifyContent: "space-between",
-		// alignItems: "center",
 	},
 	PricesRow: {
 		textAlign: "left",
 		fontSize: 16,
 		flexDirection: "row",
 		justifyContent: "space-between",
-		alignItems: "center",
 	},
 	SaleRow: {
 		textAlign: "left",
@@ -120,12 +149,47 @@ const styles = StyleSheet.create({
 		justifyContent: "flex-start",
 		alignItems: "center",
 	},
-	ItemPrice: {
+	StoreName: {
 		textAlign: "left",
 		fontSize: 20,
-		fontWeight: "600",
-		paddingTop: "2.5%",
+		alignItems: "center",
 	},
+	ItemPriceWrapper: {
+		// flex: 1,
+		// rowGap: 20,
+		// width: "40%",
+		// justifyContent: "space-between",
+		// alignItems: "flex-start",
+		// flexDirection: "row",
+		// alignItems: "center",
+	},
+	ItemPrice: {
+		// flex: 1,
+		fontSize: 20,
+
+		// textAlign: "left",
+		// fontSize: 20,
+		// fontWeight: "600",
+		// paddingTop: "2.5%",
+		// justifyContent: "space-between",
+		// flexDirection: "row",
+		// alignItems: "center",
+	},
+	ItemPriceSale: {
+		// flex: 1,
+		fontSize: 15,
+		borderRadius: 5,
+		backgroundColor: "lightgreen",
+		// textAlign: "left",
+		// fontSize: 20,
+		// fontWeight: "600",
+		// paddingTop: "2.5%",
+		// justifyContent: "space-between",
+		// flexDirection: "row",
+		// alignItems: "center",
+		textAlign: "center",
+	},
+
 	ItemPriceSymbol: {
 		textAlign: "left",
 		fontSize: 20,
